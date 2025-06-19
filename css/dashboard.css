@@ -14,6 +14,31 @@
     font-size: 3em;
     letter-spacing: 0.12em;
 }
+.dashboard-flex-forms {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    overflow: visible;
+    height: auto;
+    max-height: none;
+}
+.dashboard-flex-forms .dashboard-form,
+.dashboard-flex-forms .dashboard-users {
+    max-height: none;
+    overflow: visible;
+}
+.dashboard-flex-forms .dashboard-form {
+    min-width: 320px;
+    max-width: 420px;
+    flex: 1 1 380px;
+}
+.dashboard-flex-forms .dashboard-users {
+    flex: 2 1 700px;
+    min-width: 340px;
+    max-width: 900px;
+}
 .dashboard-form, .dashboard-users {
     background: rgba(0,0,0,0.7);
     border-radius: 18px;
@@ -23,9 +48,6 @@
     width: fit-content;
     min-width: 320px;
     max-width: 100%;
-    max-height: 400px;
-    overflow-x: auto;
-    overflow-y: auto;
 }
 .dashboard-users table {
     width: 100%;
@@ -47,7 +69,9 @@
 }
 .dashboard-form input[type="text"],
 .dashboard-form input[type="email"],
-.dashboard-form input[type="password"] {
+.dashboard-form input[type="password"],
+.dashboard-form input[type="number"],
+.dashboard-form select {
     width: 100%;
     padding: 10px;
     margin-bottom: 12px;

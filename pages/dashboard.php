@@ -13,7 +13,7 @@ $showCategories = (isset($_GET['showCategories']) && $_GET['showCategories'] == 
     <link rel="stylesheet" href="../css/dashboard.css">
 </head>
 <body>
-    <video class="video-bg" id="bgVideo" src="../images/background/poussiere.mp4" autoplay muted loop playsinline></video>
+    <video class="video-bg" id="bgVideo" src="../images/background/nuage.mp4" autoplay muted loop playsinline></video>
     <div class="dashboard-container">
         <h1 class="dashboard-title">SkinVault Admin</h1>
         <a href="../index.php?logout=1" style="position:absolute;top:24px;right:32px;z-index:5;color:#fff;">Déconnexion</a>
