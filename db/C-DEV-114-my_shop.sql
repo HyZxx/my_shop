@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `price` int(11) NOT NULL DEFAULT '0',
   `category_id` int(11) NOT NULL DEFAULT '0',
   `image` varchar(255) DEFAULT NULL,
+  `cover_image` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
