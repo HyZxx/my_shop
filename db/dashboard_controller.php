@@ -121,10 +121,9 @@ if (isset($_GET['category_limit'])) {
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
     $name = trim($_POST['name'] ?? '');
-    $parent_id = $_POST['parent_id'] !== '' ? intval($_POST['parent_id']) : null;
     if ($name) {
-        $stmt = $pdo->prepare('INSERT INTO categories (name, parent_id) VALUES (?, ?)');
-        $stmt->execute([$name, $parent_id]);
+        $stmt = $pdo->prepare('INSERT INTO categories (name) VALUES (?)');
+        $stmt->execute([$name]);
         $message = 'Catégorie ajoutée !';
     } else {
         $message = 'Nom de catégorie requis.';
@@ -133,10 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_category'])) {
     $id = intval($_POST['id']);
     $name = trim($_POST['name'] ?? '');
-    $parent_id = $_POST['parent_id'] !== '' ? intval($_POST['parent_id']) : null;
     if ($name) {
-        $stmt = $pdo->prepare('UPDATE categories SET name=?, parent_id=? WHERE id=?');
-        $stmt->execute([$name, $parent_id, $id]);
+        $stmt = $pdo->prepare('UPDATE categories SET name=? WHERE id=?');
+        $stmt->execute([$name, $id]);
         $message = 'Catégorie modifiée !';
     } else {
         $message = 'Nom de catégorie requis.';
@@ -153,3 +151,4 @@ if ($categoryLimit) {
 } else {
     $categoriesList = $pdo->query('SELECT * FROM categories')->fetchAll();
 }
+$categories = $pdo->query('SELECT * FROM categories')->fetchAll();

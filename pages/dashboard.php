@@ -73,7 +73,7 @@ $showCategories = (isset($_GET['showCategories']) && $_GET['showCategories'] == 
                 <label>Prix : <input type="number" name="price" required></label><br>
                 <label>Catégorie : <select name="category_id" required>
                     <?php foreach ($categories as $cat): ?>
-                        <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                        <option value="<?php echo $cat['id']; ?>" <?php if (isset($p) && $cat['id'] == $p['category_id']) echo 'selected'; ?>><?php echo htmlspecialchars($cat['name']); ?></option>
                     <?php endforeach; ?>
                 </select></label><br>
                 <label>Image principale : <input type="text" name="image" placeholder="URL ou chemin"></label><br>
@@ -125,12 +125,6 @@ $showCategories = (isset($_GET['showCategories']) && $_GET['showCategories'] == 
             <form class="dashboard-form" method="post">
                 <h2>Ajouter une catégorie</h2>
                 <label>Nom : <input type="text" name="name" required></label><br>
-                <label>Catégorie parente : <select name="parent_id">
-                    <option value="">Aucune</option>
-                    <?php foreach ($categories as $cat): ?>
-                        <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
-                    <?php endforeach; ?>
-                </select></label><br>
                 <button type="submit" name="add_category">Ajouter</button>
             </form>
             <div class="dashboard-users">
@@ -149,18 +143,12 @@ $showCategories = (isset($_GET['showCategories']) && $_GET['showCategories'] == 
                     </form>
                 </div>
                 <table>
-                    <tr><th>ID</th><th>Nom</th><th>Parente</th><th>Actions</th></tr>
+                    <tr><th>ID</th><th>Nom</th><th>Actions</th></tr>
                     <?php foreach ($categoriesList as $c): ?>
                     <tr>
                         <form method="post">
                             <td><?php echo $c['id']; ?><input type="hidden" name="id" value="<?php echo $c['id']; ?>"></td>
                             <td><input type="text" name="name" value="<?php echo htmlspecialchars($c['name']); ?>" required></td>
-                            <td><select name="parent_id">
-                                <option value="">Aucune</option>
-                                <?php foreach ($categories as $cat): ?>
-                                    <option value="<?php echo $cat['id']; ?>" <?php if ($cat['id'] == $c['parent_id']) echo 'selected'; ?>><?php echo htmlspecialchars($cat['name']); ?></option>
-                                <?php endforeach; ?>
-                            </select></td>
                             <td>
                                 <button type="submit" name="edit_category">Modifier</button>
                                 <button type="submit" name="delete_category" onclick="return confirm('Supprimer cette catégorie ?')">Supprimer</button>
