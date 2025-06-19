@@ -17,6 +17,7 @@ $showCategories = (isset($_GET['showCategories']) && $_GET['showCategories'] == 
     <div class="dashboard-container">
         <h1 class="dashboard-title">SkinVault Admin</h1>
         <a href="../index.php?logout=1" style="position:absolute;top:24px;right:32px;z-index:5;color:#fff;">Déconnexion</a>
+        <a href="home.php" style="position:absolute;top:60px;right:32px;z-index:5;color:#fff;text-decoration:underline;">Visualisation utilisateur</a>
         <?php if ($message): ?>
             <div class="dashboard-message"><?php echo htmlspecialchars($message); ?></div>
         <?php endif; ?>
