@@ -20,7 +20,11 @@ $showCategories = (isset($_GET['showCategories']) && $_GET['showCategories'] == 
         <?php if ($message): ?>
             <div class="dashboard-message"><?php echo htmlspecialchars($message); ?></div>
         <?php endif; ?>
-        <button id="toggleUsersBtn" style="margin: 24px auto 0 auto; display: block; background: #fff; color: #111; border: none; border-radius: 8px; padding: 12px 32px; font-size: 1.1em; font-weight: bold; cursor: pointer; box-shadow: 0 0 16px #fff;">Afficher la gestion des utilisateurs</button>
+        <div class="dashboard-btns" style="display: flex; gap: 16px; justify-content: center; margin: 24px 0 0 0;">
+            <button id="toggleUsersBtn" class="dashboard-toggle-btn">Afficher la gestion des utilisateurs</button>
+            <button id="toggleProductsBtn" class="dashboard-toggle-btn">Afficher la gestion des produits</button>
+            <button id="toggleCategoriesBtn" class="dashboard-toggle-btn">Afficher la gestion des catégories</button>
+        </div>
         <div id="usersSection" style="display: <?php echo $showUsers ? 'block' : 'none'; ?>; margin-top: 32px;">
             <form class="dashboard-form" method="post">
                 <h2>Ajouter un utilisateur</h2>
@@ -65,7 +69,6 @@ $showCategories = (isset($_GET['showCategories']) && $_GET['showCategories'] == 
                 </table>
             </div>
         </div>
-        <button id="toggleProductsBtn" style="margin: 24px auto 0 auto; display: block; background: #fff; color: #111; border: none; border-radius: 8px; padding: 12px 32px; font-size: 1.1em; font-weight: bold; cursor: pointer; box-shadow: 0 0 16px #fff;">Afficher la gestion des produits</button>
         <div id="productsSection" style="display: <?php echo $showProducts ? 'block' : 'none'; ?>; margin-top: 32px;">
             <form class="dashboard-form" method="post">
                 <h2>Ajouter un produit</h2>
@@ -120,7 +123,6 @@ $showCategories = (isset($_GET['showCategories']) && $_GET['showCategories'] == 
                 </table>
             </div>
         </div>
-        <button id="toggleCategoriesBtn" style="margin: 24px auto 0 auto; display: block; background: #fff; color: #111; border: none; border-radius: 8px; padding: 12px 32px; font-size: 1.1em; font-weight: bold; cursor: pointer; box-shadow: 0 0 16px #fff;">Afficher la gestion des catégories</button>
         <div id="categoriesSection" style="display: <?php echo $showCategories ? 'block' : 'none'; ?>; margin-top: 32px;">
             <form class="dashboard-form" method="post">
                 <h2>Ajouter une catégorie</h2>

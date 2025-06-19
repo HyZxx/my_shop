@@ -83,3 +83,24 @@
     text-align: center;
     margin-bottom: 18px;
 }
+.dashboard-btns {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin: 24px 0 0 0;
+}
+.dashboard-toggle-btn {
+    background: #fff;
+    color: #111;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 16px #fff;
+    transition: box-shadow 0.2s;
+}
+.dashboard-toggle-btn:hover {
+    box-shadow: 0 0 32px #fff;
+}
