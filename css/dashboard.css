@@ -1,0 +1,85 @@
+/* dashboard.css */
+.dashboard-container {
+    position: relative;
+    z-index: 4;
+    padding: 40px 0 0 0;
+    width: 100vw;
+    min-height: 100vh;
+    color: #fff;
+}
+.dashboard-title {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 32px;
+    font-size: 3em;
+    letter-spacing: 0.12em;
+}
+.dashboard-form, .dashboard-users {
+    background: rgba(0,0,0,0.7);
+    border-radius: 18px;
+    box-shadow: 0 0 24px #fff, 0 0 0 2px #fff;
+    padding: 24px;
+    margin: 0 auto 32px auto;
+    width: fit-content;
+    min-width: 320px;
+    max-width: 100%;
+    max-height: 400px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+.dashboard-users table {
+    width: 100%;
+    min-width: 500px;
+    color: #fff;
+    border-collapse: collapse;
+    table-layout: auto;
+    word-break: break-word;
+}
+.dashboard-users th, .dashboard-users td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #fff;
+}
+.dashboard-users th {
+    background: rgba(255,255,255,0.08);
+}
+.dashboard-users tr:last-child td {
+    border-bottom: none;
+}
+.dashboard-form input[type="text"],
+.dashboard-form input[type="email"],
+.dashboard-form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #222;
+    color: #fff;
+    outline: 2px solid #fff;
+}
+.dashboard-form label {
+    font-weight: bold;
+}
+.dashboard-form input[type="checkbox"] {
+    margin-left: 8px;
+}
+.dashboard-form button {
+    background: #fff;
+    color: #111;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 16px #fff;
+    margin-top: 8px;
+}
+.dashboard-form button:hover {
+    box-shadow: 0 0 32px #fff;
+}
+.dashboard-message {
+    color: #ffb347;
+    text-align: center;
+    margin-bottom: 18px;
+}
