@@ -168,6 +168,63 @@ html, body {
     box-shadow: 0 0 16px rgba(255, 255, 255, 0.1);
 }
 
+/* Footer */
+.footer {
+    margin-top: 80px;
+    padding: 40px 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.footer-text {
+    color: #ccc;
+    font-size: 0.9em;
+    margin: 0;
+    text-shadow: 0 0 8px #000;
+}
+
+.github-link {
+    display: inline-block;
+    color: #fff;
+    transition: color 0.3s, transform 0.3s;
+    text-decoration: none;
+}
+
+.github-icon {
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 0 8px #000);
+}
+
+.footer-video {
+    width: 200px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.2);
+    opacity: 0.8;
+}
+
 /* Responsive */
 @media (max-width: 1400px) {
     .products-grid {
@@ -236,6 +293,18 @@ html, body {
     .home-container {
         padding: 20px 15px;
     }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        padding: 0 20px;
+    }
+    
+    .footer-video {
+        width: 150px;
+        height: 90px;
+    }
 }
 
 @media (max-width: 600px) {
@@ -252,5 +321,14 @@ html, body {
     
     .site-title {
         font-size: 2.5em;
+    }
+    
+    .footer-content {
+        padding: 0 15px;
+    }
+    
+    .footer-video {
+        width: 120px;
+        height: 72px;
     }
 }
