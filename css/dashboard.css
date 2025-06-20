@@ -129,10 +129,25 @@
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 0 16px #fff;
-    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+    text-decoration: none;
+    display: inline-block;
 }
 .dashboard-toggle-btn:hover {
     box-shadow: 0 0 32px #fff;
+}
+.dashboard-toggle-btn.active {
+    background: #111;
+    color: #fff;
+    box-shadow: 0 0 24px #fff, 0 0 0 2px #fff;
+}
+.dashboard-toggle-btn.active:hover {
+    box-shadow: 0 0 32px #fff, 0 0 0 3px #fff;
+}
+.toggle-form-btn {
+    background: #333 !important;
+    color: #fff !important;
+    box-shadow: 0 0 12px #fff !important;
 }
 .video-bg {
     position: fixed;
