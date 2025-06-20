@@ -1,5 +1,4 @@
 <?php
-// Page d'accueil après connexion
 session_start();
 if (!isset($_SESSION['user'])) {
     header('Location: ../index.php');
@@ -10,7 +9,6 @@ require_once '../db/db_connect.php';
 
 $user = $_SESSION['user'];
 
-// Récupérer tous les produits avec leurs catégories
 try {
     $pdo = getPDO();
     $stmt = $pdo->prepare('
@@ -39,6 +37,15 @@ try {
         
         <div class="user-info">
             <span>Bienvenue, <?php echo htmlspecialchars($user['username']); ?> !</span>
+            <div class="search-container">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Rechercher par nom ou catégorie..." onkeyup="filterProducts()">
+                    <button class="search-clear" id="clearSearch" onclick="clearSearch()" style="display: none;">&times;</button>
+                </div>
+            </div>
             <a href="../index.php?logout=1" class="logout-btn">Déconnexion</a>
         </div>
 
@@ -52,7 +59,6 @@ try {
             <?php else: ?>
                 <?php foreach ($products as $product): ?>
                     <?php 
-                    // Pour l'affichage de la carte (cover_image)
                     $card_image_path = '';
                     $card_image_exists = false;
                     
@@ -72,7 +78,6 @@ try {
                         }
                     }
                     
-                    // Pour la popup (image principale)
                     $popup_image_path = '';
                     $popup_image_exists = false;
                     
@@ -92,7 +97,6 @@ try {
                         }
                     }
                     
-                    // Si pas d'image principale, utiliser cover_image comme fallback
                     if (!$popup_image_exists && $card_image_exists) {
                         $popup_image_path = $card_image_path;
                         $popup_image_exists = true;
@@ -175,12 +179,10 @@ try {
             const popupCategory = document.getElementById('popupCategory');
             const popupPrice = document.getElementById('popupPrice');
             
-            // Remplir les détails
             popupName.textContent = product.name;
             popupCategory.textContent = product.category_name || 'Sans catégorie';
             popupPrice.textContent = parseFloat(product.price).toFixed(2) + ' €';
             
-            // Gérer l'image
             if (imagePath && imagePath.trim() !== '') {
                 popupImage.src = imagePath;
                 popupImage.alt = product.name;
@@ -191,25 +193,104 @@ try {
                 popupImagePlaceholder.style.display = 'flex';
             }
             
-            // Afficher la popup
             popup.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Empêcher le scroll
+            document.body.style.overflow = 'hidden';
         }
         
         function closeProductPopup() {
             const popup = document.getElementById('productPopup');
             popup.style.display = 'none';
-            document.body.style.overflow = 'auto'; // Réactiver le scroll
+            document.body.style.overflow = 'auto';
         }
         
-        // Fermer la popup en cliquant sur l'overlay
+        function filterProducts() {
+            const searchInput = document.getElementById('searchInput');
+            const clearButton = document.getElementById('clearSearch');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const productCards = document.querySelectorAll('.product-card');
+            const noProductsDiv = document.querySelector('.no-products');
+            const productsGrid = document.querySelector('.products-grid');
+            
+            if (searchTerm.length > 0) {
+                clearButton.style.display = 'block';
+            } else {
+                clearButton.style.display = 'none';
+            }
+            
+            let visibleCount = 0;
+            const visibleCards = [];
+            
+            productCards.forEach(card => {
+                const productName = card.querySelector('.product-name').textContent.toLowerCase();
+                const productCategory = card.querySelector('.product-category').textContent.toLowerCase();
+                
+                if (searchTerm === '' || 
+                    productName.startsWith(searchTerm) || 
+                    productCategory.startsWith(searchTerm)) {
+                    visibleCards.push(card);
+                    visibleCount++;
+                }
+            });
+            
+            if (searchTerm === '') {
+                productCards.forEach(card => {
+                    card.style.order = '';
+                    card.style.display = 'flex';
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                    }, 10);
+                });
+            } else {
+                productCards.forEach(card => {
+                    card.style.display = 'none';
+                    card.style.opacity = '0';
+                });
+                
+                visibleCards.forEach((card, index) => {
+                    card.style.display = 'flex';
+                    card.style.order = index;
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                    }, index * 50 + 10);
+                });
+            }
+            
+            if (noProductsDiv) {
+                if (searchTerm.length > 0 && visibleCount === 0) {
+                    noProductsDiv.style.display = 'block';
+                    noProductsDiv.textContent = 'Aucun produit trouvé commençant par "' + searchInput.value + '"';
+                } else {
+                    noProductsDiv.style.display = 'none';
+                }
+            }
+        }
+        
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const clearButton = document.getElementById('clearSearch');
+            
+            searchInput.value = '';
+            clearButton.style.display = 'none';
+            
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                card.style.opacity = '0';
+            });
+            
+            setTimeout(() => {
+                filterProducts();
+            }, 150);
+            
+            searchInput.focus();
+        }
+        
         document.getElementById('productPopup').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeProductPopup();
             }
         });
         
-        // Fermer la popup avec la touche Échap
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeProductPopup();

@@ -33,10 +33,81 @@ html, body {
     align-items: center;
     margin-bottom: 40px;
     padding: 0 20px;
+    gap: 20px;
 }
 
 .user-info span {
     font-size: 1.2em;
+    color: #fff;
+    white-space: nowrap;
+}
+
+/* Barre de recherche */
+.search-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    max-width: 400px;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 8px 15px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.search-box:focus-within {
+    border-color: #fff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    color: #ccc;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 1em;
+    width: 100%;
+    padding: 5px 0;
+}
+
+.search-box input::placeholder {
+    color: #aaa;
+}
+
+.search-clear {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+    flex-shrink: 0;
+}
+
+.search-clear:hover {
+    background: rgba(255, 255, 255, 0.1);
     color: #fff;
 }
 
@@ -71,14 +142,19 @@ html, body {
     border-radius: 18px;
     box-shadow: 0 0 24px #fff, 0 0 0 2px #fff;
     padding: 16px;
-    transition: box-shadow 0.3s, transform 0.3s;
+    transition: box-shadow 0.3s, transform 0.3s, opacity 0.8s;
     cursor: pointer;
     aspect-ratio: 1; /* Carrés parfaits */
-    display: flex;
+    display: flex !important; /* Force le display flex même après JS */
     flex-direction: column;
     width: 280px;
     height: 280px;
     margin: 0 auto;
+}
+
+/* Correction pour les cartes cachées */
+.product-card[style*="display: none"] {
+    display: none !important;
 }
 
 .product-card:hover {
@@ -416,6 +492,19 @@ html, body {
         text-align: center;
     }
     
+    .search-container {
+        order: 2;
+        max-width: 100%;
+    }
+    
+    .search-box {
+        padding: 10px 15px;
+    }
+    
+    .search-box input {
+        font-size: 0.9em;
+    }
+    
     .products-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 25px;
@@ -473,6 +562,14 @@ html, body {
     
     .site-title {
         font-size: 2.5em;
+    }
+    
+    .user-info {
+        padding: 0 10px;
+    }
+    
+    .search-container {
+        max-width: 100%;
     }
     
     .footer-content {
