@@ -51,31 +51,57 @@ try {
                 <div class="no-products">Aucun produit disponible pour le moment.</div>
             <?php else: ?>
                 <?php foreach ($products as $product): ?>
-                    <div class="product-card">
-                        <div class="product-image">
-                            <?php 
-                            $image_path = '';
-                            $image_exists = false;
-                            
-                            if (!empty($product['cover_image'])) {
-                                // Essayer différents chemins possibles
-                                $possible_paths = [
-                                    '../' . $product['cover_image'],  // Chemin relatif depuis pages/
-                                    '../images/' . $product['cover_image'],  // Dans le dossier images
-                                    $product['cover_image']  // Chemin direct
-                                ];
-                                
-                                foreach ($possible_paths as $path) {
-                                    if (file_exists($path)) {
-                                        $image_path = $path;
-                                        $image_exists = true;
-                                        break;
-                                    }
-                                }
+                    <?php 
+                    // Pour l'affichage de la carte (cover_image)
+                    $card_image_path = '';
+                    $card_image_exists = false;
+                    
+                    if (!empty($product['cover_image'])) {
+                        $possible_paths = [
+                            '../' . $product['cover_image'],
+                            '../images/' . $product['cover_image'],
+                            $product['cover_image']
+                        ];
+                        
+                        foreach ($possible_paths as $path) {
+                            if (file_exists($path)) {
+                                $card_image_path = $path;
+                                $card_image_exists = true;
+                                break;
                             }
-                            
-                            if ($image_exists): ?>
-                                <img src="<?php echo htmlspecialchars($image_path); ?>" 
+                        }
+                    }
+                    
+                    // Pour la popup (image principale)
+                    $popup_image_path = '';
+                    $popup_image_exists = false;
+                    
+                    if (!empty($product['image'])) {
+                        $possible_paths = [
+                            '../' . $product['image'],
+                            '../images/' . $product['image'],
+                            $product['image']
+                        ];
+                        
+                        foreach ($possible_paths as $path) {
+                            if (file_exists($path)) {
+                                $popup_image_path = $path;
+                                $popup_image_exists = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Si pas d'image principale, utiliser cover_image comme fallback
+                    if (!$popup_image_exists && $card_image_exists) {
+                        $popup_image_path = $card_image_path;
+                        $popup_image_exists = true;
+                    }
+                    ?>
+                    <div class="product-card" onclick="openProductPopup(<?php echo htmlspecialchars(json_encode($product)); ?>, '<?php echo $popup_image_exists ? htmlspecialchars($popup_image_path) : ''; ?>')">
+                        <div class="product-image">
+                            <?php if ($card_image_exists): ?>
+                                <img src="<?php echo htmlspecialchars($card_image_path); ?>" 
                                      alt="<?php echo htmlspecialchars($product['name']); ?>">
                             <?php else: ?>
                                 <div class="image-placeholder">
@@ -115,5 +141,80 @@ try {
             </div>
         </footer>
     </div>
+    
+    <!-- Popup produit -->
+    <div id="productPopup" class="popup-overlay">
+        <div class="popup-content">
+            <button class="popup-close" onclick="closeProductPopup()">&times;</button>
+            <div class="popup-body">
+                <div class="popup-image">
+                    <img id="popupImage" src="" alt="">
+                    <div id="popupImagePlaceholder" class="popup-image-placeholder" style="display: none;">
+                        <span>Image non disponible</span>
+                    </div>
+                </div>
+                <div class="popup-details">
+                    <h2 id="popupName"></h2>
+                    <p class="popup-category">Catégorie: <span id="popupCategory"></span></p>
+                    <p class="popup-price" id="popupPrice"></p>
+                    <div class="popup-description">
+                        <h3>Description</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openProductPopup(product, imagePath) {
+            const popup = document.getElementById('productPopup');
+            const popupImage = document.getElementById('popupImage');
+            const popupImagePlaceholder = document.getElementById('popupImagePlaceholder');
+            const popupName = document.getElementById('popupName');
+            const popupCategory = document.getElementById('popupCategory');
+            const popupPrice = document.getElementById('popupPrice');
+            
+            // Remplir les détails
+            popupName.textContent = product.name;
+            popupCategory.textContent = product.category_name || 'Sans catégorie';
+            popupPrice.textContent = parseFloat(product.price).toFixed(2) + ' €';
+            
+            // Gérer l'image
+            if (imagePath && imagePath.trim() !== '') {
+                popupImage.src = imagePath;
+                popupImage.alt = product.name;
+                popupImage.style.display = 'block';
+                popupImagePlaceholder.style.display = 'none';
+            } else {
+                popupImage.style.display = 'none';
+                popupImagePlaceholder.style.display = 'flex';
+            }
+            
+            // Afficher la popup
+            popup.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Empêcher le scroll
+        }
+        
+        function closeProductPopup() {
+            const popup = document.getElementById('productPopup');
+            popup.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Réactiver le scroll
+        }
+        
+        // Fermer la popup en cliquant sur l'overlay
+        document.getElementById('productPopup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeProductPopup();
+            }
+        });
+        
+        // Fermer la popup avec la touche Échap
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeProductPopup();
+            }
+        });
+    </script>
 </body>
 </html>
