@@ -292,14 +292,28 @@ a.product-card {
     text-shadow: 0 0 8px #000;
 }
 
-.github-link {
+.footer-links {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.github-link,
+.mail-link {
     display: inline-block;
     color: #fff;
     transition: color 0.3s, transform 0.3s;
     text-decoration: none;
 }
 
-.github-icon {
+.github-link:hover,
+.mail-link:hover {
+    transform: scale(1.1);
+}
+
+.github-icon,
+.mail-icon {
     width: 24px;
     height: 24px;
     filter: drop-shadow(0 0 8px #000);
