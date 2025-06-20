@@ -9,15 +9,46 @@ require_once '../db/db_connect.php';
 
 $user = $_SESSION['user'];
 
+// Gestion de la recherche
+$search_term = isset($_GET['search']) ? trim($_GET['search']) : '';
+
+// Gestion du popup produit
+$popup_product_id = isset($_GET['product']) ? (int)$_GET['product'] : 0;
+$popup_product = null;
+
 try {
     $pdo = getPDO();
-    $stmt = $pdo->prepare('
+    
+    // Si un produit est sélectionné pour le popup, le récupérer
+    if ($popup_product_id > 0) {
+        $stmt = $pdo->prepare('
+            SELECT p.*, c.name as category_name 
+            FROM products p 
+            LEFT JOIN categories c ON p.category_id = c.id 
+            WHERE p.id = ?
+        ');
+        $stmt->execute([$popup_product_id]);
+        $popup_product = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    // Récupérer tous les produits avec filtrage par recherche
+    $sql = '
         SELECT p.*, c.name as category_name 
         FROM products p 
-        LEFT JOIN categories c ON p.category_id = c.id 
-        ORDER BY p.id ASC
-    ');
-    $stmt->execute();
+        LEFT JOIN categories c ON p.category_id = c.id
+    ';
+    
+    $params = [];
+    if (!empty($search_term)) {
+        $sql .= ' WHERE (p.name LIKE ? OR c.name LIKE ?)';
+        $search_param = $search_term . '%';
+        $params = [$search_param, $search_param];
+    }
+    
+    $sql .= ' ORDER BY p.id ASC';
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     $products = [];
@@ -38,13 +69,20 @@ try {
         <div class="user-info">
             <span>Bienvenue, <?php echo htmlspecialchars($user['username']); ?> !</span>
             <div class="search-container">
-                <div class="search-box">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                    <input type="text" id="searchInput" placeholder="Rechercher par nom ou catégorie..." onkeyup="filterProducts()">
-                    <button class="search-clear" id="clearSearch" onclick="clearSearch()" style="display: none;">&times;</button>
-                </div>
+                <form method="GET" action="" class="search-form">
+                    <?php if ($popup_product_id > 0): ?>
+                        <input type="hidden" name="product" value="<?php echo $popup_product_id; ?>">
+                    <?php endif; ?>
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                        <input type="text" name="search" placeholder="Rechercher par nom ou catégorie..." value="<?php echo htmlspecialchars($search_term); ?>">
+                        <?php if (!empty($search_term)): ?>
+                            <a href="?<?php echo $popup_product_id > 0 ? 'product=' . $popup_product_id : ''; ?>" class="search-clear">&times;</a>
+                        <?php endif; ?>
+                    </div>
+                </form>
             </div>
             <a href="../index.php?logout=1" class="logout-btn">Déconnexion</a>
         </div>
@@ -55,7 +93,11 @@ try {
 
         <div class="products-grid">
             <?php if (empty($products)): ?>
-                <div class="no-products">Aucun produit disponible pour le moment.</div>
+                <?php if (!empty($search_term)): ?>
+                    <div class="no-products">Aucun produit trouvé commençant par "<?php echo htmlspecialchars($search_term); ?>"</div>
+                <?php else: ?>
+                    <div class="no-products">Aucun produit disponible pour le moment.</div>
+                <?php endif; ?>
             <?php else: ?>
                 <?php foreach ($products as $product): ?>
                     <?php 
@@ -102,7 +144,7 @@ try {
                         $popup_image_exists = true;
                     }
                     ?>
-                    <div class="product-card" onclick="openProductPopup(<?php echo htmlspecialchars(json_encode($product)); ?>, '<?php echo $popup_image_exists ? htmlspecialchars($popup_image_path) : ''; ?>')">
+                    <a href="?product=<?php echo $product['id']; ?><?php echo !empty($search_term) ? '&search=' . urlencode($search_term) : ''; ?>" class="product-card">
                         <div class="product-image">
                             <?php if ($card_image_exists): ?>
                                 <img src="<?php echo htmlspecialchars($card_image_path); ?>" 
@@ -121,7 +163,7 @@ try {
                             <p class="product-category"><?php echo htmlspecialchars($product['category_name'] ?? 'Sans catégorie'); ?></p>
                             <p class="product-price"><?php echo number_format($product['price'], 2); ?> €</p>
                         </div>
-                    </div>
+                    </a>
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
@@ -147,160 +189,71 @@ try {
     </div>
     
     <!-- Popup produit -->
-    <div id="productPopup" class="popup-overlay">
-        <div class="popup-content">
-            <button class="popup-close" onclick="closeProductPopup()">&times;</button>
-            <div class="popup-body">
-                <div class="popup-image">
-                    <img id="popupImage" src="" alt="">
-                    <div id="popupImagePlaceholder" class="popup-image-placeholder" style="display: none;">
-                        <span>Image non disponible</span>
+    <?php if ($popup_product): ?>
+        <?php 
+        // Gestion des images pour le popup
+        $popup_image_path = '';
+        $popup_image_exists = false;
+        
+        if (!empty($popup_product['image'])) {
+            $possible_paths = [
+                '../' . $popup_product['image'],
+                '../images/' . $popup_product['image'],
+                $popup_product['image']
+            ];
+            
+            foreach ($possible_paths as $path) {
+                if (file_exists($path)) {
+                    $popup_image_path = $path;
+                    $popup_image_exists = true;
+                    break;
+                }
+            }
+        }
+        
+        // Fallback vers cover_image
+        if (!$popup_image_exists && !empty($popup_product['cover_image'])) {
+            $possible_paths = [
+                '../' . $popup_product['cover_image'],
+                '../images/' . $popup_product['cover_image'],
+                $popup_product['cover_image']
+            ];
+            
+            foreach ($possible_paths as $path) {
+                if (file_exists($path)) {
+                    $popup_image_path = $path;
+                    $popup_image_exists = true;
+                    break;
+                }
+            }
+        }
+        ?>
+        <div class="popup-overlay" style="display: flex;">
+            <div class="popup-content">
+                <a href="?<?php echo !empty($search_term) ? 'search=' . urlencode($search_term) : ''; ?>" class="popup-close">&times;</a>
+                <div class="popup-body">
+                    <div class="popup-image">
+                        <?php if ($popup_image_exists): ?>
+                            <img src="<?php echo htmlspecialchars($popup_image_path); ?>" alt="<?php echo htmlspecialchars($popup_product['name']); ?>">
+                        <?php else: ?>
+                            <div class="popup-image-placeholder">
+                                <span>Image non disponible</span>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                </div>
-                <div class="popup-details">
-                    <h2 id="popupName"></h2>
-                    <p class="popup-category">Catégorie: <span id="popupCategory"></span></p>
-                    <p class="popup-price" id="popupPrice"></p>
-                    <div class="popup-description">
-                        <h3>Description</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                    <div class="popup-details">
+                        <h2><?php echo htmlspecialchars($popup_product['name']); ?></h2>
+                        <p class="popup-category">Catégorie: <span><?php echo htmlspecialchars($popup_product['category_name'] ?? 'Sans catégorie'); ?></span></p>
+                        <p class="popup-price"><?php echo number_format($popup_product['price'], 2); ?> €</p>
+                        <div class="popup-description">
+                            <h3>Description</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                        </div>
+                        <button class="buy-button">Acheter</button>
                     </div>
-                    <button class="buy-button" onclick="handlePurchase()">Acheter</button>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <script>
-        function openProductPopup(product, imagePath) {
-            const popup = document.getElementById('productPopup');
-            const popupImage = document.getElementById('popupImage');
-            const popupImagePlaceholder = document.getElementById('popupImagePlaceholder');
-            const popupName = document.getElementById('popupName');
-            const popupCategory = document.getElementById('popupCategory');
-            const popupPrice = document.getElementById('popupPrice');
-            
-            popupName.textContent = product.name;
-            popupCategory.textContent = product.category_name || 'Sans catégorie';
-            popupPrice.textContent = parseFloat(product.price).toFixed(2) + ' €';
-            
-            if (imagePath && imagePath.trim() !== '') {
-                popupImage.src = imagePath;
-                popupImage.alt = product.name;
-                popupImage.style.display = 'block';
-                popupImagePlaceholder.style.display = 'none';
-            } else {
-                popupImage.style.display = 'none';
-                popupImagePlaceholder.style.display = 'flex';
-            }
-            
-            popup.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeProductPopup() {
-            const popup = document.getElementById('productPopup');
-            popup.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        
-        function filterProducts() {
-            const searchInput = document.getElementById('searchInput');
-            const clearButton = document.getElementById('clearSearch');
-            const searchTerm = searchInput.value.toLowerCase().trim();
-            const productCards = document.querySelectorAll('.product-card');
-            const noProductsDiv = document.querySelector('.no-products');
-            const productsGrid = document.querySelector('.products-grid');
-            
-            if (searchTerm.length > 0) {
-                clearButton.style.display = 'block';
-            } else {
-                clearButton.style.display = 'none';
-            }
-            
-            let visibleCount = 0;
-            const visibleCards = [];
-            
-            productCards.forEach(card => {
-                const productName = card.querySelector('.product-name').textContent.toLowerCase();
-                const productCategory = card.querySelector('.product-category').textContent.toLowerCase();
-                
-                if (searchTerm === '' || 
-                    productName.startsWith(searchTerm) || 
-                    productCategory.startsWith(searchTerm)) {
-                    visibleCards.push(card);
-                    visibleCount++;
-                }
-            });
-            
-            if (searchTerm === '') {
-                productCards.forEach(card => {
-                    card.style.order = '';
-                    card.style.display = 'flex';
-                    card.style.opacity = '0';
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                    }, 10);
-                });
-            } else {
-                productCards.forEach(card => {
-                    card.style.display = 'none';
-                    card.style.opacity = '0';
-                });
-                
-                visibleCards.forEach((card, index) => {
-                    card.style.display = 'flex';
-                    card.style.order = index;
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                    }, index * 50 + 10);
-                });
-            }
-            
-            if (noProductsDiv) {
-                if (searchTerm.length > 0 && visibleCount === 0) {
-                    noProductsDiv.style.display = 'block';
-                    noProductsDiv.textContent = 'Aucun produit trouvé commençant par "' + searchInput.value + '"';
-                } else {
-                    noProductsDiv.style.display = 'none';
-                }
-            }
-        }
-        
-        function clearSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const clearButton = document.getElementById('clearSearch');
-            
-            searchInput.value = '';
-            clearButton.style.display = 'none';
-            
-            const productCards = document.querySelectorAll('.product-card');
-            productCards.forEach(card => {
-                card.style.opacity = '0';
-            });
-            
-            setTimeout(() => {
-                filterProducts();
-            }, 150);
-            
-            searchInput.focus();
-        }
-        
-        function handlePurchase() {
-            return false;
-        }
-        
-        document.getElementById('productPopup').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeProductPopup();
-            }
-        });
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeProductPopup();
-            }
-        });
-    </script>
+    <?php endif; ?>
 </body>
 </html>

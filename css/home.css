@@ -50,6 +50,10 @@ html, body {
     max-width: 400px;
 }
 
+.search-form {
+    width: 100%;
+}
+
 .search-box {
     position: relative;
     display: flex;
@@ -104,6 +108,7 @@ html, body {
     border-radius: 50%;
     transition: background-color 0.3s;
     flex-shrink: 0;
+    text-decoration: none;
 }
 
 .search-clear:hover {
@@ -150,6 +155,14 @@ html, body {
     width: 280px;
     height: 280px;
     margin: 0 auto;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Styles pour les liens */
+a.product-card {
+    text-decoration: none;
+    color: inherit;
 }
 
 /* Correction pour les cartes cachées */
@@ -356,6 +369,7 @@ html, body {
     justify-content: center;
     border-radius: 50%;
     transition: background-color 0.3s;
+    text-decoration: none;
 }
 
 .popup-close:hover {
