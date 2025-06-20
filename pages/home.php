@@ -9,17 +9,14 @@ require_once '../db/db_connect.php';
 
 $user = $_SESSION['user'];
 
-// Gestion de la recherche
 $search_term = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Gestion du popup produit
 $popup_product_id = isset($_GET['product']) ? (int)$_GET['product'] : 0;
 $popup_product = null;
 
 try {
     $pdo = getPDO();
     
-    // Si un produit est sélectionné pour le popup, le récupérer
     if ($popup_product_id > 0) {
         $stmt = $pdo->prepare('
             SELECT p.*, c.name as category_name 
@@ -31,7 +28,6 @@ try {
         $popup_product = $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
-    // Récupérer tous les produits avec filtrage par recherche
     $sql = '
         SELECT p.*, c.name as category_name 
         FROM products p 
@@ -84,7 +80,12 @@ try {
                     </div>
                 </form>
             </div>
-            <a href="../index.php?logout=1" class="logout-btn">Déconnexion</a>
+            <div class="user-actions">
+                <?php if (!empty($user['admin'])): ?>
+                    <a href="dashboard.php" class="admin-btn">Dashboard Admin</a>
+                <?php endif; ?>
+                <a href="../index.php?logout=1" class="logout-btn">Déconnexion</a>
+            </div>
         </div>
 
         <?php if (isset($error_message)): ?>
@@ -198,7 +199,6 @@ try {
     <!-- Popup produit -->
     <?php if ($popup_product): ?>
         <?php 
-        // Gestion des images pour le popup
         $popup_image_path = '';
         $popup_image_exists = false;
         
@@ -218,7 +218,6 @@ try {
             }
         }
         
-        // Fallback vers cover_image
         if (!$popup_image_exists && !empty($popup_product['cover_image'])) {
             $possible_paths = [
                 '../' . $popup_product['cover_image'],
