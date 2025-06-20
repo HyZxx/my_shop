@@ -114,7 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         <a href="?step=forms" class="enter-btn">Start Shopping</a>
     
     <?php else: ?>
-        <!-- Vidéo avec autoplay retardé pour simuluer une continuation -->
         <video class="video-bg forms-video" src="images/background/metro.mp4" autoplay muted loop preload="auto"></video>
         <div class="fade-overlay"></div>
         <div class="blur-overlay"></div>
