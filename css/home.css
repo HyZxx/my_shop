@@ -438,6 +438,33 @@ html, body {
     text-align: justify;
 }
 
+/* Bouton acheter */
+.buy-button {
+    background: #fff;
+    color: #111;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: box-shadow 0.3s ease;
+    box-shadow: 0 0 16px #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.buy-button:hover {
+    box-shadow: 0 0 32px #fff;
+}
+
+.buy-button:active {
+    transform: translateY(1px);
+}
+
 /* Responsive */
 @media (max-width: 1400px) {
     .products-grid {

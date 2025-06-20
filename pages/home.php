@@ -165,6 +165,7 @@ try {
                         <h3>Description</h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
                     </div>
+                    <button class="buy-button" onclick="handlePurchase()">Acheter</button>
                 </div>
             </div>
         </div>
@@ -283,6 +284,10 @@ try {
             }, 150);
             
             searchInput.focus();
+        }
+        
+        function handlePurchase() {
+            return false;
         }
         
         document.getElementById('productPopup').addEventListener('click', function(e) {
