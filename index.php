@@ -103,6 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <head>
     <meta charset="UTF-8">
     <title>SkinVault</title>
+    <meta name="description" content="SkinVault est votre boutique en ligne spécialisée dans la vente d'armes CS:GO, de skins exclusifs et d'objets de collection Counter-Strike. Découvrez notre catalogue de pistolets, fusils d'assaut et mitraillettes avec des designs uniques.">
     <link rel="stylesheet" href="css/index.css">
 </head>
 <body class="<?= $step === 'forms' ? 'forms-page' : 'intro-page' ?>">
